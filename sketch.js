@@ -1,14 +1,16 @@
-const ellipseSize = random(10,20,30,40,50);
+const r_math = 10;
+const ellipseSize = r_math;
 // Step 3 (pt 1). Constants to control our random displacement and rotation
-const randomDisplacement = 15;
-const rotateMultiplier = 20;
+
+const randomDisplacement = 10;
+const rotateMultiplier = 2;
 
 function setup() {
 	// Create a ellipse canvas
-	createCanvas(500, 500);
+	createCanvas(windowWidth, windowHeight);
 	noFill();
 	// make a static sketch
-	noLoop();
+	// noLoop();
 }
 
 function draw() {
@@ -16,6 +18,7 @@ function draw() {
 	// Start one ellipse away from the edge by initializing x and y to ellipseSize
 	for(let x = ellipseSize; x <= width - ellipseSize; x += ellipseSize) {
 		for(let y = ellipseSize; y <= height - ellipseSize; y+= ellipseSize) {
+      fill(random(255), random(255), random(255));
 			// Step 3 (pt 2). for each ellipse, calculate an amount of displacement and rotation
 			let plusOrMinus = Math.random() < 0.9 ? -1 : 1;
 			// By using y, we increase the amount of rotation as we get to lower rows
@@ -46,4 +49,8 @@ function draw() {
 			pop();
 		}
 	}
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
 }
