@@ -1,7 +1,7 @@
-const ellipseSize = random(10,20,30,40,50);
+const ellipseSize = 2;
 // Step 3 (pt 1). Constants to control our random displacement and rotation
-const randomDisplacement = 15;
-const rotateMultiplier = 20;
+const randomDisplacement = 25;
+const rotateMultiplier = 10;
 
 function setup() {
 	// Create a ellipse canvas
