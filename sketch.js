@@ -36,9 +36,9 @@ function draw() {
 			// Draw a ellipse centered on the position (x, y)
 			ellipse(
 				// The left edge of the ellipse will be half its width left of x
-				-ellipseSize / Math.random(),
+				-ellipseSize / 2,
 				// The top edge of the ellipse will be half its height above y
-				-ellipseSize / Math.random(),
+				-ellipseSize / 2,
 				ellipseSize
 			);
 			// The pop function restores the drawing position from the last time push was
