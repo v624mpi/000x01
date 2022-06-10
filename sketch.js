@@ -10,21 +10,21 @@ let  num = 20;
 var maxDiameter; 
 var theta; 
 
-function setup() {
-  v = h
-  w = min(windowWidth, windowHeight);
+
+function setup() {w
 	createCanvas(w, w);
   	// createCanvas(500, 500);
-	noSmooth();
-  frameRate(60)
-  // smooth(90);
+    pixelDensity(1);
+	// noSmooth();
+  frameRate(129)
+  smooth(90);
   maxDiameter = 50; 
   filter(POSTERIZE);
+}
 	theta = 0; 
   pcX = 25;
   spcY = 25;
   pad = w/10;
-}
   pad = w/10;
 // var cell = 10;
 // var a = 0;
@@ -55,27 +55,27 @@ function draw() {
 // pop();
 
 /////
-createCell(pad,pad,w-pad*2,w-pad*2,7)
+// createCell(pad,pad,w-pad*2,w-pad*2,7)
 
 ////
 
 
 
-	randomSeed(frameCount / 500);
-	// blendMode(DIF);
+	randomSeed(frameCount / 100);
+	blendMode(OVERLAY);
 
 	copy(0,0,width,height,-1,-1,width+2,height+ 2);  
 	palette = shuffle(createPalette(random(url)), true);
 	// background(0);
 	blendMode(DIFFERENCE);
 	let offset = -windowWidth / 10;
-	let yStep = (windowHeight - offset *  diam / random(2,200)) / random(2,100);
+	let yStep = (windowHeight - offset *  diam / random(100,200)) / random(10,100);
 	for (let y = yStep; y <= height - offset; y += yStep) {
 
-		let num = int(1 + diam * noise(y, frameCount / random(2,200)));
+		let num = int(1 + diam * noise(y, frameCount / random(200,600)));
 		let arr = [];
 		for (let i = 0; i < num; i++) {
-			let n = sq(sq(noise(y / diam, frameCount / 400))) * (windowHeight - offset * 20);
+			let n = sq(sq(noise(y / diam, frameCount / 900))) * (windowHeight - offset * 20);
 			n = max(n, 5);
 			arr.push(n);
 		}
@@ -91,11 +91,11 @@ createCell(pad,pad,w-pad*2,w-pad*2,7)
 	let xStep = (windowWidth - offset *  diam / random(1,200)) / random(2,100);
 	for (let x = yStep; x <= width - offset; x += xStep) {
 
-		let num = int(10 + diam * noise(x, frameCount / 500));
+		let num = int(2 + PI * noise(x, frameCount / 500));
 		let arr = [];
 		for (let i = 0; i < num; i++) {
-			let n = sq(sq(noise(x / diam, frameCount / 200))) * (width - offset * 20);
-			n = max(n, 1);
+			let n = sq(sq(noise(x / diam, frameCount / 200))) * (width - offset * random(1,10));
+			n = max(n, );
 			arr.push(n);
 		}
 		drawingContext.setLineDash(arr);
@@ -248,4 +248,156 @@ function getColorByTheta(theta, time, freq) {
 	g = 0.5 + 0.5 * sin(th - PI * 1 / 3);
 	b = 0.5 + 0.5 * sin(th - PI * 2 / 3);
 	return color(r * 255, g * 255, b * 255);
+}
+
+function draw5  () {
+	for (let i = 0; i < 5; i++) {
+		let x = random(-0.2, 1.2) * width;
+		let y = random(-0.2, 1.2) * height;
+		let w = random(0.005, 0.3) * width;
+		let h = random(0.01, 0.4) * height;
+		push();
+		translate(x, y);
+		rotate(int(random(4)) * TAU / 4);
+		spaceKnife(0, 0, w, h);
+		pop();
+	}
+}
+
+function spaceKnife(x, y, w, h) {
+	let col = color(random(colors));
+	let ns = random(0.1) * random();
+	for (let j = 0; j < w; j += 0.5) {
+		let xx = (x + j) - w / 2;
+		let hn = h * noise(x, y, j * ns) * 2;
+		for (let i = 0; i < hn; i += 0.5) {
+			let yy = y - i;
+			let p = map(i, 0, hn, 0, 1);
+			col.setAlpha(random(10, 255));
+			stroke(col);
+			strokeWeight((random(0.005) * random(random(random())) * width) + 1);
+			if (random() > p) point(xx, yy);
+		}
+	}
+}
+
+let toggle = 1;
+function keyPressed() {
+	if (key == 's') {
+		save(day() + '_' + month() + '_' + year() + '_' + hour() + '_' + minute() + '_' + second());
+	}
+	if (key == '.') {
+		redraw();
+	}
+	if (key == ' ') {
+		if (toggle == 0) {
+			noLoop();
+			toggle = 1;
+		} else if (toggle == 1) {
+			loop();
+			toggle = 0;
+		}
+	}
+}
+
+function draw6() {wqdddd
+
+  let offset = width / 15;
+
+  let x = offset;
+  let y = offset;
+  let d = width - offset * 2;
+  let minD = width / 20;
+
+  separateGrid(x, y, d, minD);
+
+
+}
+
+function separateGrid(x, y, d, minD) {
+  let sep = int(random(1, 5));
+  let w = d / sep;
+
+  push();
+  translate(x + d / 2, y + d / 2);
+  scale(random() > 0.5 ? -1 : 1, random() > 0.5 ? -1 : 1);
+  rotate((int(random(4)) * 360) / 4);
+  translate(-d / 2, -d / 2);
+
+  for (let j = 0; j < sep; j++) {
+    for (let i = 0; i < sep; i++) {
+      let nx = i * w;
+      let ny = j * w;
+      if (random(100) < 95 && w > minD) {
+        separateGrid(nx, ny, w, minD);
+      } else {
+        pixelRect(nx, ny, w, w);
+      }
+    }
+  }
+
+  pop();
+}
+
+function pixelRect(x, y, w, h,c) {
+  // rect(x,y,w,h);
+
+  let density = random([2, 4, 8]);
+
+  let g = createGraphics(density, density);
+  g.translate(0.5, 0.5);
+  let n, k;
+  switch (int(random(5))) {
+    case 0:
+      for (let i = 0; i < density; i++) {
+        g.point(i, i);
+      }
+      break;
+    case 1:
+      n = int(random(2));
+      for (let i = 0; i < density; i++) {
+        if (i % 2 == n) {
+          g.line(i, -1, i, g.height + 1);
+        }
+      }
+      break;
+    case 2:
+      k = int(random(2));
+      for (let j = 0; j < density; j++) {
+        for (let i = 0; i < density; i++) {
+          if (j % 2 == (j + k) % 2) {
+            g.point(i, j);
+          }
+        }
+      }
+      break;
+    case 3:
+      k = int(random(2));
+      for (let i = 0; i < density; i++) {
+        if (i % 2 == k) {
+          for (let j = i; j < density; j++) {
+            g.point(i, j);
+          }
+        }
+      }
+      break;
+    case 4:
+      for (let j = 0; j < density; j++) {
+        k = j%2;
+        for (let i = 0; i < density; i++) {
+          n = j * density + i;
+          if (n % 2 == k) {
+            g.point(i, j);
+          }
+        }
+      }
+      break;
+  }
+  push();
+  translate(x + w / 2, y + w / 2);
+  scale(random() > 0.5 ? -1 : 1, random() > 0.5 ? -1 : 1);
+  rotate((int(random(4)) * 360) / 4);
+  translate(-w / 2, -w / 2);
+  image(g, 0, 0, w, h);
+  pop();
 }

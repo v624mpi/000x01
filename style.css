@@ -1,10 +1,12 @@
 html, body {
   margin: 0;
+  background-color: black;
   padding: 0;
 }
 
 
 canvas {
+  background-color: antiquewhite;
   display: block;
   width: 100px;
   height: 100px;
