@@ -1,67 +1,98 @@
-const ellipseSize = 40;
-const rectSize = 10;
-
-
-// Step 3 (pt 1). Constants to control our random displacement and rotation
-
-const randomDisplacement = 145;
-const rotateMultiplier = 20;
+let url = [
+	"https://coolors.co/ef476f-ffd166-06d6a0-118ab2-073b4c",
+	"https://coolors.co/ffa69e-faf3dd-b8f2e6-aed9e0-5e6472",
+	"https://coolors.co/f72585-7209b7-3a0ca3-4361ee-4cc9f0",
+	"https://coolors.co/d7263d-f46036-2e294e-1b998b-c5d86d",
+];
+let palette;
+let w = innerWidth;
+let h = innerHeight;
+let  num = 20;
+var maxDiameter; 
+var theta; 
 
 function setup() {
-	// Create a ellipse canvas
-	createCanvas(windowWidth, windowHeight);
-	noFill();
-
-	// make a static sketch
-	// noLoop();
+  v = h
+	createCanvas(800, 800);
+	// noSmooth();
+  smooth(5);
+  maxDiameter = 50; 
+	theta = 0; 
 }
 
 function draw() {
-  background('white');
-	// Start one ellipse away from the edge by initializing x and y to ellipseSize
-	for(let x = ellipseSize; x <= width - ellipseSize; x += ellipseSize) {
-		for(let y = ellipseSize; y <= height - rectSize/2; y+= rectSize/4) {
-      fill(random(["#E36397", "#db6800", "#e8ff81", "#29f0b6", "#531253", "#938ba1", "#ea3788"]));
-			// Step 3 (pt 2). for each ellipse, calculate an amount of displacement and rotation
-			let plusOrMinus = Math.random() < 0.5 ? -1 : 1;
-			// By using y, we increase the amount of rotation as we get to lower rows
-    	let rotateAmt = y / height * Math.PI / 180 * plusOrMinus * Math.random() * rotateMultiplier;
+  var diam = 100 + sin(theta) * maxDiameter ;
+	randomSeed(frameCount / 500);
+	// blendMode(BLEND);
+	background(255);
+	copy(0,0,width,height,-1,-1,width+10,height+2);  
+	palette = shuffle(createPalette(random(url)), true);
+	// background(0);
+	// blendMode(DIFFERENCE);
+	let offset = -width / 10;
+	let yStep = (height - offset *  v / random(10,50)) / random(2,20);
+	for (let y = offset; y <= height - offset; y += yStep) {
 
-			plusOrMinus = Math.random() < 0.5 ? -1 : 1;
-			let translateAmt = y / height * plusOrMinus * Math.random() * randomDisplacement;
-			
-			// The push function saves the current p5js settings
-			// which includes position as well as stroke, fill, and many others
-			push();
-			// Move the drawing position to the (x, y)
-			
-			// Step 3 (pt 3). Add the random x translation and the rotation.
-			translate(x + translateAmt, y);
-			rotate(rotateAmt);
-			
-			// Draw a ellipse centered on the position (x, y)
-			ellipse(
-				// The left edge of the ellipse will be half its width left of x
-				-ellipseSize / 2,
-				// The top edge of the ellipse will be half its height above y
-				-ellipseSize / 2,
-				ellipseSize
-			);
-      rect(
-				// The left edge of the ellipse will be half its width left of x
-				-rectSize / 2,
-				// The top edge of the ellipse will be half its height above y
-				-rectSize / 2,
-				rectSize
-			);
-      
-			// The pop function restores the drawing position from the last time push was
-			// called
-			pop();
+		let num = int(1 + diam * noise(y, frameCount / 200));
+		let arr = [];
+		for (let i = 0; i < num; i++) {
+			let n = sq(sq(noise(y / 10, frameCount / 400))) * (width - offset * 2);
+			n = max(n, 1);
+			arr.push(n);
 		}
+		drawingContext.setLineDash(arr);
+		drawingContext.lineDashOffset = y - frameCount / 200;
+		strokeWeight(yStep);
+		strokeCap(SQUARE);
+		// stroke(random(palette));
+		line(offset, y, width - offset, y);
 	}
+
+	let xStep = (width - offset * diam) / 7;
+	for (let x = offset; x <= width - offset; x += xStep) {
+
+		let num = int(1 + 20 * noise(x, frameCount / 200));
+		let arr = [];
+		for (let i = 0; i < num; i++) {
+			let n = sq(sq(noise(x / 10, frameCount /  v / random(10,299)))) * (width - offset * 2);
+			n = max(n, 1);
+			arr.push(n);
+		}
+		drawingContext.setLineDash(arr);
+		drawingContext.lineDashOffset = x - frameCount / 200;
+		strokeWeight(xStep);
+		strokeCap(SQUARE)
+		// stroke(random(palette));
+		line(x, offset, x, height - offset * 2);
+	}
+
+
+	for (let y = offset; y <= height / 2 - offset; y += yStep) {
+
+		let num = int(1 + 10 * noise(y, frameCount / 100));
+		let arr = [];
+		for (let i = 0; i < num; i++) {
+			let n = sq(sq(noise(y / 10, frameCount / 200))) * (width - offset * 2);
+			n = max(n, 1);
+			arr.push(n);
+		}
+		drawingContext.setLineDash(arr);
+		drawingContext.lineDashOffset = y - frameCount / 100;
+		strokeWeight(yStep);
+		strokeCap(SQUARE)
+		line(offset, y , width - offset, y);
+	}
+
 }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+
+
+function createPalette(_url) {
+	let slash_index = _url.lastIndexOf('/');
+	let pallate_str = _url.slice(slash_index + 1);
+	let arr = pallate_str.split('-');
+	for (let i = 0; i < arr.length; i++) {
+		arr[i] = color('#' + arr[i]);
+	}
+	return arr;
 }
