@@ -1,8 +1,10 @@
-// Step 1. Basic Setup
-const squareSize = 30;
+const ellipseSize = random(10,20,30,40,50);
+// Step 3 (pt 1). Constants to control our random displacement and rotation
+const randomDisplacement = 15;
+const rotateMultiplier = 20;
 
 function setup() {
-	// Create a square canvas
+	// Create a ellipse canvas
 	createCanvas(500, 500);
 	noFill();
 	// make a static sketch
@@ -11,15 +13,15 @@ function setup() {
 
 function draw() {
   background('white');
-	// Start one square away from the edge by initializing x and y to squareSize
-	for(let x = squareSize; x <= width - squareSize; x += squareSize) {
-		for(let y = squareSize; y <= height - squareSize; y+= squareSize) {
-			// Step 3 (pt 2). for each square, calculate an amount of displacement and rotation
-			let plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+	// Start one ellipse away from the edge by initializing x and y to ellipseSize
+	for(let x = ellipseSize; x <= width - ellipseSize; x += ellipseSize) {
+		for(let y = ellipseSize; y <= height - ellipseSize; y+= ellipseSize) {
+			// Step 3 (pt 2). for each ellipse, calculate an amount of displacement and rotation
+			let plusOrMinus = Math.random() < 0.9 ? -1 : 1;
 			// By using y, we increase the amount of rotation as we get to lower rows
     	let rotateAmt = y / height * Math.PI / 180 * plusOrMinus * Math.random() * rotateMultiplier;
 
-			plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+			plusOrMinus = Math.random() < 0.1 ? -1 : 1;
 			let translateAmt = y / height * plusOrMinus * Math.random() * randomDisplacement;
 			
 			// The push function saves the current p5js settings
@@ -31,13 +33,13 @@ function draw() {
 			translate(x + translateAmt, y);
 			rotate(rotateAmt);
 			
-			// Draw a square centered on the position (x, y)
-			square(
-				// The left edge of the square will be half its width left of x
-				-squareSize / 2,
-				// The top edge of the square will be half its height above y
-				-squareSize / 2,
-				squareSize
+			// Draw a ellipse centered on the position (x, y)
+			ellipse(
+				// The left edge of the ellipse will be half its width left of x
+				-ellipseSize / Math.random(),
+				// The top edge of the ellipse will be half its height above y
+				-ellipseSize / Math.random(),
+				ellipseSize
 			);
 			// The pop function restores the drawing position from the last time push was
 			// called
