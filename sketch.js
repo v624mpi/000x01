@@ -6,7 +6,7 @@ function setup() {
 }
 
 function draw() {
-  background(220);
+  background(000);
   //random size
   A_001 = random (10,20,30,40);
   A_002 = random (40,55,65,80);
