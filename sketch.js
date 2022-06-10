@@ -5,7 +5,7 @@ let url = [
 ];
 let palette;
 let w = innerWidth;
-let h = innerHeight;
+let z = innerHeight;
 let  num = 20;
 var maxDiameter; 
 var theta; 
@@ -13,14 +13,14 @@ const points=[]
 const n=5
 let   t=0
 
+
 function setup() {
-  v = h
-  
+  v = z
+  loadVars();
+  loadHills();
+  rr(0, 0, DIM, DIM*.75);
 	createCanvas(windowWidth, windowHeight);
 
-  for(i=0;i<w*n;i++){
-		points[i]=createVector(random(width),random(height))  // Create all the points
-	}
   	// createCanvas(500, 500);
 	// noSmooth();
   frameRate(60)
@@ -30,17 +30,111 @@ function setup() {
 	theta = 0; 
 }
 
+const loadVars = () => {
+  colorSeed = random(0, 100);
+  brightSeed = random(30, 100);
+  skyOff = random(0, 50);
+  sunX = random(0, width);
+  sunY = random(-50, 20);
+  sunSize = random(80, 200);
+};
+
+let h = [];
+const noiseVal = 0.003;
+const COUNT = 5;
+let colorSeed;
+let brightSeed;
+let skyOff;
+let sunX;
+let sunY;
+let sunSize;
+function draw() {
+  displayHills();
+  displayGlare(true);
+  displayGrain();
+  noLoop();
+}
+const displayHills = () => {
+  for (let hill of h) {
+    hill.display();
+    hill.move();
+  }
+};
+
+const loadHills = () => {
+  for (let y = height / 2, o = 0; y < height + 300; y += COUNT, o += 2) {
+    h.push(new Hill(y + o, 0));
+  }
+};
+
+class Hill {
+  constructor(y, t) {
+    this.y = y;
+    this.t = t;
+  }
+
+  display() {
+    let sat = map(this.y - 500, 0, height, 20, 100);
+    strokeWeight(1);
+    stroke(colorSeed, sat, brightSeed < 50 ? 100 : 40);
+    fill(colorSeed, sat, brightSeed);
+    beginShape();
+    vertex(-100, height + 100);
+    for (let i = 0; i < width; i += 1) {
+      let ny = noise(i * noiseVal, this.y / 100, this.t * noiseVal);
+      let yOff = map(ny, 0, 1, 0, height / 3);
+      vertex(i, this.y - yOff);
+    }
+    vertex(width + 100, height + 100);
+
+    endShape(CLOSE);
+    
+    //trees
+    for (let i = 0; i < width; i += 1) {
+      
+      if(random(100)<0.5){
+        fill(colorSeed, sat, brightSeed-20);
+        noStroke();
+        let ny = noise(i * noiseVal, this.y / 100, this.t * noiseVal);
+
+        let yOff = map(ny, 0, 1, 0, height / 3);
+
+        let tMap = map(this.y,0,height,0,3)
+        translate(i, this.y - yOff)
+        rotate(random(-10,10))
+        let rH = random(3,10)
+        rect(0,0,tMap,rH+this.y/100)
+        ellipse(0,-(rH+this.y/100)/2,tMap*2)
+        resetMatrix();
+      }
+    }
+  }
+
+  move() {
+    this.t += 10;
+  }
+}
+
+function displayGrain() {
+    for(let i = 0; i <300000; i++){
+      noStroke();
+      fill(colorSeed, 20, 100, 5);
+
+      rect(random(width), random(height), random(0,2),random(0,2))
+    }
+}
+
 function draw() {
   var diam = 100 + sin(theta) * maxDiameter ;
 
 	randomSeed(frameCount / 500);
-	blendMode(OVERLAY);
+	blendMode(HARD_LIGHT);
 	// background('#20222f');
 	copy(0,0,width,height,-1,-1,width+2,height+ 2);  
 	palette = shuffle(createPalette(random(url)), true);
 	// background(0);
-	blendMode(DIFFERENCE);
-	let offset = -windowWidth / 2;
+	// blendMode(DIFFERENCE);
+	let offset = -windowWidth / 40;
 	let yStep = (windowHeight - offset *  diam / random(10,22)) / random(2,20);
 	for (let y = yStep; y <= height - offset; y += yStep) {
 
@@ -55,18 +149,18 @@ function draw() {
 		drawingContext.lineDashOffset = y - frameCount / 1000;
 		strokeWeight(yStep);
 		strokeCap(SQUARE);
-    stroke(random(['#83def3','#d1ecf7','#f2f6f9','#fce503','#fe6d02','#e7011d','#4b0f31']));
-		// stroke(palette);
+    // stroke(random(['#83def3','#d1ecf7','#f2f6f9','#fce503','#fe6d02','#e7011d','#4b0f31']));
+		stroke(palette);
 		line(offset, y, width - offset, y);
 	}
 //width,yStep,diam
-	let xStep = (diam - offset * 1) / 7;
+	let xStep = (diam - offset * 1) / 20;
 	for (let x = yStep; x <= width - offset; x += xStep) {
 
-		let num = int(1 + diam * noise(x, frameCount / 100));
+		let num = int(1 + diam * noise(x, frameCount / 800));
 		let arr = [];
 		for (let i = 0; i < num; i++) {
-			let n = sq(sq(noise(x / diam, frameCount / 900))) * (width - offset * 10);
+			let n = sq(sq(noise(x / diam, frameCount / 900))) * (width - offset * 1);
 			n = max(n, 1);
 			arr.push(n);
 		}
@@ -74,7 +168,7 @@ function draw() {
 		drawingContext.lineDashOffset = x - frameCount / 200;
 		strokeWeight(xStep);
 		strokeCap(SQUARE)
-    stroke(random(['#20222f','#1a1f56','#2c1e7d','#118ab2','#0134aa','#0060e8','#0297fb','#00befa']));
+    stroke(random(["#1B064C", "#F72585", "#B5179E", "#7209B7", "#4361EE", "#4361EE", "#4895EF", "#4CC9F0"]));
 		// stroke(random(palette));
 		line(x, offset, x, height - offset * 2);
 	}
@@ -128,5 +222,133 @@ function windowResized() {
 
 
 
+function rnd_hash() {
+  let chars = "0123456789abcdef";
+  let result = '0x';
+  for (let i = 64; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+  return result;
+}
 
+//let tokenData = {"hash":"0x691e99da0aa5f5530a7b3b9dc2b75c8f1c462e4bf20c52bc79fb8dc6c4179ffd","tokenId":"0"}
+let tokenData = {"hash":rnd_hash(),"tokenId":"0"}
+let seed = parseInt(tokenData.hash.slice(0, 16), 16);
+//console.log(tokenData.hash)
+
+class Palette {
+  constructor(colors, repeat=3) {
+    this.c = colors;
+    this.repeat = repeat;
+    this.i = 0;
+    this.u = 0;
+  }
+  increment() {
+    if (this.i == this.c.length-1) {
+      this.i = 0
+    } else {
+      this.i += 1
+    }
+  }
+  usage() {
+    if (this.u % this.repeat == 0) {
+      this.increment()
+    }
+    this.u += 1
+  }
+  color() {
+    this.usage()
+    return this.c[this.i]
+  }
+}
+
+var DEFAULT_SIZE = 1112
+var WIDTH = 1112;
+var HEIGHT = 834;
+var DIM = WIDTH;
+var M = DIM / DEFAULT_SIZE
+var PAL = ["#1B064C", "#F72585", "#B5179E", "#7209B7", "#4361EE", "#4361EE", "#4895EF", "#4CC9F0"]
+var bg = "#000003"
+var mod_1 = 0.1
+var mod_2 = 0.25
+
+mod_1 = mod_1 > 1 ? 1 : mod_1
+mod_1 = mod_1 < 0 ? 0 : mod_1
+mod_2 = mod_2 > 1 ? 1 : mod_2
+mod_2 = mod_2 < 0 ? 0 : mod_2
+
+var repeat = Math.floor(mod_1*10)+1
+var P1 = new Palette(PAL.slice(1), repeat=repeat)
+
+var max_h = rnd_between(1, 20)*M
+var max_w = rnd_between(5, 100)*M
+
+function rr(x, y, w, h) {
+  fill(P1.color())
+  stroke(bg)
+  strokeWeight(rnd_between(1, 10)*M)
+  if (rnd_between(0, 0.55) > 0.5) {
+    rect_partition(x, y, x+w, y+h)
+  }
+  let sw = rnd_between(0, 0.7) > 0.5;
+  let sl = rnd_between(0.1, 0.8);
+  if (sw && w > max_w)
+  {
+    rr(x, y, w * sl, h);
+    rr(x + (w * sl), y, w * (1 - sl), h);
+  }
+  else if (h > max_h)
+  {
+    rr(x, y, w, h * sl);
+    rr(x, y + (h * sl), w, h * (1 - sl));
+  }
+}
+function hatch(x1, x2, y1, y2, x_step, y_step) {
+  let y_range = range(y1, y2, y_step) 
+  for (let i=0; i < y_range.length-1; i++) {
+    let y1 = y_range[i]
+    let y2 = y_range[i+1]
+    rect_partition(x1, y1, x2, y2, step=x_step) 
+  }
+}
+function rescale(e, t, r, i, a) {
+  return ((e - t) / (r - t)) * (a - i) + i
+}
+function range(start, stop, step) {
+    var a = [start], b = start;
+    while (b < stop) {
+        a.push(b += step || 1);
+    }
+    return (b > stop) ? a.slice(0,-1) : a;
+}
+function rect_partition(x1, y1, x2, y2) {
+  let step = 15*M
+  let breaks = range(x1, x2, step).slice(rnd_between(1,5))
+  rect(x1, y1, (x2-x1), (y2-y1))
+  let height = y2-y1
+  for (let xm of breaks) {
+    fill(P1.color())
+    rect(x1, y1, (xm-x1), (y2-y1))
+    x1 = xm
+  }
+}
+function rnd_dec() {
+  seed ^= seed << 13
+  seed ^= seed >> 17
+  seed ^= seed << 5
+  return ((seed < 0 ? ~seed + 1 : seed) % 1000) / 1000
+}
+function rnd_between(a, b) {
+  return a + (b - a) * rnd_dec()
+}
+function rnd_choice(choices) {
+  return choices[Math.floor(rnd_between(0, choices.length * 0.99))]
+}
+
+let lapse = 0;    // mouse timer
+function mousePressed(){
+  // prevents mouse press from registering twice
+  if (millis() - lapse > 400){
+    save('pix.jpg');
+    lapse = millis();
+  }
+}
 
