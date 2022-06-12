@@ -11,14 +11,12 @@ canvas {
   margin: 0 auto;
 }
 
-img{
-  opacity: 0.9;
-}
+
 .responsive{
-  position: absolute;
-  top: 0%;
-  left: 27.66%;
-  width: 800px;
-  height: 1000px;
-  mix-blend-mode: difference;
+  mix-blend-mode: color-burn;
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  margin: 0 auto;
 }
